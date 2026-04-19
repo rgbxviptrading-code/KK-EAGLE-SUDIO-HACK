@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KK AI STUDIO - ULTRA COMPACT</title>
+    <style>
+        :root {
+            --dark-blue-glow: #0044ff;
+            --deep-bg: rgba(2, 5, 20, 0.98);
+            --neon-white: #ffffff;
+            --electric-blue: #00d2ff;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            overflow: hidden; background: #000;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* گیم بیک گراؤنڈ */
+        #game-frame {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none; z-index: 1;
+        }
+
+        /* --- چھوٹا لوگو اور سفید فلیشنگ لوڈنگ --- */
+        #logo-container {
+            position: fixed;
+            top: 80%; left: 85%;
+            width: 65px; height: 65px;
+            z-index: 2000;
+            cursor: move;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .white-flash-ring {
+            position: absolute;
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top: 3px solid var(--neon-white);
+            border-bottom: 3px solid var(--neon-white);
+            animation: ringSpin 1s linear infinite, ringFlash 0.5s ease-in-out infinite alternate;
+            box-shadow: 0 0 15px var(--neon-white);
+        }
+
+        @keyframes ringSpin { to { transform: rotate(360deg); } }
+        @keyframes ringFlash { from { opacity: 0.3; scale: 0.9; } to { opacity: 1; scale: 1.1; } }
+
+        .logo-main {
+            width: 50px; height: 50px;
+            border-radius: 50%; background: #000;
+            z-index: 2001; border: 2px solid var(--electric-blue);
+            overflow: hidden; box-shadow: 0 0 10px var(--electric-blue);
+        }
+        .logo-main img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* --- الٹرا ہیوی ڈارک بلو پینل (چھوٹا سائز) --- */
+        #kk-ai-panel {
+            position: fixed;
+            top: 20%; left: 10%;
+            width: 240px; /* سائز چھوٹا کر دیا گیا */
+            background: var(--deep-bg);
+            border-radius: 12px;
+            z-index: 1999;
+            display: none;
+            flex-direction: column;
+            color: white;
+            box-shadow: 0 0 40px var(--dark-blue-glow), inset 0 0 20px rgba(0, 68, 255, 0.5);
+            border: 1px solid var(--electric-blue);
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+        }
+
+        .panel-header {
+            padding: 10px;
+            background: linear-gradient(90deg, #001133, #0044ff);
+            cursor: move;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 11px; font-weight: bold; text-transform: uppercase;
+            letter-spacing: 1px; border-bottom: 1px solid var(--electric-blue);
+        }
+
+        .panel-content { padding: 15px; text-align: center; }
+
+        /* پیریڈ نمبر */
+        .period-display {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 5px; border-radius: 4px;
+            font-size: 11px; color: #00ffcc;
+            margin-bottom: 12px; border: 1px solid rgba(0, 255, 204, 0.3);
+        }
+
+        /* پریڈکشن باکسز (ہیوی اینیمیشن) */
+        .prediction-area { display: flex; gap: 8px; margin-bottom: 15px; }
+        .p-box {
+            flex: 1; height: 65px;
+            background: radial-gradient(circle, #001133, #000);
+            border: 1px solid var(--dark-blue-glow);
+            border-radius: 8px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+
+        .p-box::before {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: sweep 2s infinite;
+        }
+        @keyframes sweep { 100% { left: 100%; } }
+
+        .scan-line {
+            position: absolute; width: 100%; height: 2px;
+            background: var(--neon-white); box-shadow: 0 0 10px var(--neon-white);
+            top: 0; display: none;
+        }
+        .active-scan .scan-line { display: block; animation: scanMove 1s linear infinite; }
+        @keyframes scanMove { 0% { top: 0%; } 100% { top: 100%; } }
+
+        .p-val { font-size: 24px; font-weight: 900; display: none; text-shadow: 0 0 10px #fff; }
+
+        /* ہیوی بٹن */
+        .btn-main {
+            width: 100%; padding: 10px;
+            background: linear-gradient(45deg, #001133, #0044ff);
+            border: 1px solid var(--electric-blue);
+            color: white; font-weight: bold; border-radius: 6px;
+            cursor: pointer; font-size: 12px;
+            transition: 0.3s; text-shadow: 0 0 5px white;
+        }
+        .btn-main:hover { box-shadow: 0 0 20px var(--dark-blue-glow); transform: scale(1.02); }
+
+        .footer-acc { font-size: 9px; color: #00ff00; margin-top: 8px; opacity: 0.8; }
+
+    </style>
+</head>
+<body>
+
+    <iframe id="game-frame" src="https://kkeagle.com/#/register?invitationCode=93022100566"></iframe>
+
+    <div id="logo-container" class="drag-item">
+        <div class="white-flash-ring"></div>
+        <div class="logo-main" onclick="togglePanel()">
+            <img src="https://uploads.onecompiler.io/447679hw7/44kuraptq/file_00000000b1e4720882de824c8ed3405f.png">
+        </div>
+    </div>
+
+    <div id="kk-ai-panel" class="drag-item">
+        <div class="panel-header" id="drag-handle">
+            <span>KK AI STUDIO PANEL</span>
+            <span style="cursor:pointer; font-size:16px;" onclick="togglePanel()">×</span>
+        </div>
+        <div class="panel-content">
+            <div class="period-display">PERIOD: <span id="period">WAIT...</span></div>
+            
+            <div class="prediction-area">
+                <div class="p-box" id="n-box">
+                    <span style="font-size: 8px; color: #00d2ff;">NUMBER</span>
+                    <div class="scan-line"></div>
+                    <span class="p-val" id="r-num">?</span>
+                </div>
+                <div class="p-box" id="s-box">
+                    <span style="font-size: 8px; color: #00d2ff;">SIZE</span>
+                    <div class="scan-line"></div>
+                    <span class="p-val" id="r-size">?</span>
+                </div>
+            </div>
+
+            <button class="btn-main" onclick="executePrediction()">GET PREDICTION</button>
+            <div class="footer-acc">99% ACCURACY SECURED</div>
+        </div>
+    </div>
+
+    <script>
+        // پیریڈ نمبر کوڈ
+        function getP(){
+            var d=new Date();
+            var utc=new Date(d.toLocaleString('en-US',{timeZone:'UTC'}));
+            utc.setMinutes(utc.getMinutes()+330);
+            var t=utc.getUTCHours()*60+utc.getUTCMinutes();
+            return (10001+t).toString().slice(-5);
+        }
+        setInterval(() => { document.getElementById('period').innerText = getP(); }, 1000);
+
+        function togglePanel() {
+            const p = document.getElementById('kk-ai-panel');
+            p.style.display = (p.style.display === 'none' || p.style.display === '') ? 'flex' : 'none';
+        }
+
+        function executePrediction() {
+            const n = document.getElementById('r-num');
+            const s = document.getElementById('r-size');
+            const boxes = document.querySelectorAll('.p-box');
+            
+            n.style.display = 'none'; s.style.display = 'none';
+            boxes.forEach(b => b.classList.add('active-scan'));
+
+            setTimeout(() => {
+                boxes.forEach(b => b.classList.remove('active-scan'));
+                const num = Math.floor(Math.random() * 10);
+                const size = (num >= 5) ? "BIG" : "SMALL";
+                
+                n.innerText = num; s.innerText = size;
+                n.style.display = 'block'; s.style.display = 'block';
+                s.style.color = (size === "BIG") ? "#ff0044" : "#00d2ff";
+            }, 1800);
+        }
+
+        // --- سموتھ ڈریگنگ سسٹم ---
+        function makeDraggable(element, handle) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            const trigger = handle || element;
+
+            trigger.onmousedown = (e) => {
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = () => {
+                    document.onmouseup = null;
+                    document.onmousemove = null;
+                };
+                document.onmousemove = (e) => {
+                    e.preventDefault();
+                    pos1 = pos3 - e.clientX;
+                    pos2 = pos4 - e.clientY;
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    element.style.top = (element.offsetTop - pos2) + "px";
+                    element.style.left = (element.offsetLeft - pos1) + "px";
+                    element.style.bottom = "auto";
+                    element.style.right = "auto";
+                };
+            };
+
+            // موبائل سپورٹ
+            trigger.ontouchstart = (e) => {
+                pos3 = e.touches[0].clientX;
+                pos4 = e.touches[0].clientY;
+                document.ontouchend = () => {
+                    document.ontouchend = null;
+                    document.ontouchmove = null;
+                };
+                document.ontouchmove = (e) => {
+                    pos1 = pos3 - e.touches[0].clientX;
+                    pos2 = pos4 - e.touches[0].clientY;
+                    pos3 = e.touches[0].clientX;
+                    pos4 = e.touches[0].clientY;
+                    element.style.top = (element.offsetTop - pos2) + "px";
+                    element.style.left = (element.offsetLeft - pos1) + "px";
+                };
+            };
+        }
+
+        makeDraggable(document.getElementById("logo-container"));
+        makeDraggable(document.getElementById("kk-ai-panel"), document.getElementById("drag-handle"));
+
+    </script>
+</body>
+</html>
